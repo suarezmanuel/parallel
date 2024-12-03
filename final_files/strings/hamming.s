@@ -11,8 +11,6 @@ _format: .string "%d\n"
 
 .section .text
 .globl hamming_dist
-.globl main # Just so it will compile on its own
-main:
 
 strlenss:
 

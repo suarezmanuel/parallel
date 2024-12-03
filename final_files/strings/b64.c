@@ -107,13 +107,12 @@ int b64_distance(char str1[MAX_STR], char str2[MAX_STR]){
     return val1 - val2;
 }
 
+// int main() {
+//     // Example strings with smaller values
+//     char str1[MAX_STR] = "123123*$#^@%@H";
+//     char str2[MAX_STR] = "123123*$#^@%@i";
+//     int distance = b64_distance(str1, str2);
+//     printf("Base64 Distance: %d\n", distance);  // Expected output should be within int range
 
-int main() {
-    // Example strings with smaller values
-    char str1[MAX_STR] = "123123*$#^@%@H";
-    char str2[MAX_STR] = "123123*$#^@%@i";
-    int distance = b64_distance(str1, str2);
-    printf("Base64 Distance: %d\n", distance);  // Expected output should be within int range
-
-    return 0;
-}
+//     return 0;
+// }

@@ -53,7 +53,3 @@ float formula1 (float* p, int n) {
 
     return sqrt(1.0+cbrt(sum)/mult);
 }
-// Just so the file will compile on it's own
-int main(){
-
-}

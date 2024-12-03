@@ -9,8 +9,6 @@ _1_ps:
 
 .section .text
 .globl formula2
-.globl main # Just so it will compile on its own
-main:
 
 formula2:
     pushq   %rbp
