@@ -8,11 +8,9 @@ EOS_mask:
 _format: .string "%d\n"
 
 .section .text
-.globl strlens
-.globl formula1
-.globl main
+.globl hamming_dist
 
-strlens:
+strlenss:
 
 push %rbp
 mov %rsp, %rbp
@@ -21,7 +19,7 @@ mov %rsp, %rbp
 xor %rax, %rax
 xor %rcx, %rcx
 #Load mask into xmm1
-lea EOS_mask, %rsi
+lea EOS_mask(%rip), %rsi
 movdqu (%rsi), %xmm1
 .loop:
 add %rax, %rcx
@@ -38,24 +36,21 @@ ret
 # MY CODE ---------------------
 # -----------------------------
 
-main:
-
-hamming_distance:
-
+hamming_dist:
 pushq %rbp
 movq %rsp, %rbp
                         # set locadls
 movq $0, %r11
-movq 8(%rsi), %r12      # str1
-movq 16(%rsi), %r13     # str2
+movq %rsi, %r12      # str1
+movq %rdi, %r13     # str2
 pushq $0                # diff
                        
 movq %r12, %rdi         # len1
-call strlens            # result is in rcx
+call strlenss            # result is in rcx
 pushq %rcx
                         
 movq %r13, %rdi         # len2
-call strlens
+call strlenss
 movq %rcx, %rdx         # result is in rcx
 popq %rcx
 # push len1, len2
@@ -116,7 +111,7 @@ jmp .START
 movq (%rsp), %rax
 addq %rax, 8(%rsp)        # diff += abs(len1 - len2)#         
 
-movq $_format, %rdi     # print difference
+movq _format(%rip), %rdi     # print difference
 movq 8(%rsp), %rsi
 call printf
 leave

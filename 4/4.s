@@ -20,7 +20,8 @@ function:
     xorps   %xmm0, %xmm0           # xmm0 = 0.0, sum
 
     # Load a vector of ones (__m128 _1 = _mm_set_ps1(1);)
-    movaps  _1_ps(%rip), %xmm1     # xmm1 = {1.0, 1.0, 1.0, 1.0}, mult
+    movaps  _1_ps(%rip), %xmm7     # xmm1 = {1.0, 1.0, 1.0, 1.0}, mult
+    movaps  %xmm7, %xmm1     # xmm1 = {1.0, 1.0, 1.0, 1.0}, mult
 
     # Prepare loop variables
     movq    %rdx, %rcx             # rcx = n
@@ -32,7 +33,7 @@ function:
     # Start of the loop
 .LoopStart:
     cmpq    %r8, %rcx              # Compare loop counter with iteration count
-    jge     .LoopEnd               # If r8 >= rcx, exit loop
+    jle     .LoopEnd               # If r8 >= rcx, exit loop
 
     # Load x and y vectors (__m128 x = _mm_loadu_ps(px);)
     movups  (%rdi), %xmm2          # xmm2 = x = *px
@@ -51,7 +52,7 @@ function:
     mulps   %xmm5, %xmm6           # xmm6 = x_minus_y^2
 
     # Compute pow_x_minus_y_plus_1 = pow_x_minus_y + 1; (__m128 pow_x_minus_y_plus_1 = _mm_add_ps(pow_x_minus_y, _1);)
-    addps   %xmm1, %xmm6           # xmm6 = pow_x_minus_y + 1
+    addps   %xmm7, %xmm6           # xmm6 = pow_x_minus_y + 1
 
     # Update sum (__m128 sum = _mm_add_ps(sum, xy);)
     addps   %xmm4, %xmm0           # sum += xy
@@ -85,6 +86,8 @@ function:
 
     # Reduction of mult vector to a scalar
 
+    cvttss2siq %xmm0, %rax
+
     # First shuffle and multiply (mult = mult * shuffle(mult, mult, _MM_SHUFFLE(2,3,0,1));)
     movaps  %xmm1, %xmm7           # xmm7 = mult
     shufps  $0xB1, %xmm1, %xmm7    # xmm7 = shuffle(mult, mult, 0xB1)
@@ -96,6 +99,8 @@ function:
     mulps   %xmm7, %xmm1           # mult *= shuffled mult
 
     # Extract the scalar values from sum and mult
+
+    cvttss2siq %xmm1, %rax
 
     # Compute the division (result = sum[0] / mult[0];)
     movss   %xmm1, %xmm7           # xmm7 = mult[0]
