@@ -1,5 +1,5 @@
-/*Azmon Avraham Zvi 216270827
-Manuel Suarez*/
+/* 216270827 Azmon Avraham Zvi
+340858935 Manuel Ignacio Suarez Del Solar */
 #include <emmintrin.h>
 #include <math.h>
 #include <stdio.h>
@@ -53,43 +53,7 @@ float formula1 (float* p, int n) {
 
     return sqrt(1.0+cbrt(sum)/mult);
 }
+// Just so the file will compile on it's own
+int main(){
 
-// int main (int argc, char** argv) {
-//     float arr [4] = {1,1,1,1};
-//     printf("res:  %f\n", function(arr,4));
-// }
-
-
-// int main (int argc, char** argv) {
-//     // how to sum two vectors of length 4
-//     // shuffle patterns: 4321, 2143 thats it because log2(4)=2
-    
-//     long long sum_numerator = 0;
-//     long long mult_denumerator = 1;
-
-//     // __m128i x;
-//     // __m128i sqrt_x;
-//     // __m128i x_x;
-//     // __m128i sum_sqrt_x;
-
-//     float arr [4] = {1,1,1,1}; 
-//     int n = 4;
-
-//     float* p = arr;
-
-//     for (int i=0; i < n; i++) {
-//         float x = *p;
-//         float sqrt_x = sqrt(x);
-//         sum_numerator += sqrt_x;
-
-//         float x_x = x*x;
-//         float x_x_1 = x_x + 1;
-
-//         mult_denumerator *= x_x_1;
-//         p++;
-//     }
-
-//     printf("sum:  %lld\n", sum_numerator);
-//     printf("mult: %lld\n", mult_denumerator);
-//     printf("res:  %f\n", sqrt(1+cbrt(sum_numerator)/mult_denumerator));
-// }
+}
