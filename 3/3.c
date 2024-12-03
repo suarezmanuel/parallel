@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 float function (float* p, int n) {
+
     // create constants' vectors
     __m128 _0 = _mm_set_ps1(0);
     __m128 _1 = _mm_set_ps1(1);
@@ -19,24 +20,28 @@ float function (float* p, int n) {
         __m128 sqrt_x = _mm_sqrt_ps(x);
 
         __m128 sum = sqrt_x;
-        // creates mask for the shuffle, values are from 0 to 3
-        // #define _MM_SHUFFLE(z, y, x, w) (((z) << 6) | ((y) << 4) | ((x) << 2) | (w))
-        sum = _mm_add_ps(sum, _mm_shuffle_ps(sum, sum, _MM_SHUFFLE(3,2,1,0)));
-        sum = _mm_add_ps(sum, _mm_shuffle_ps(sum, sum, _MM_SHUFFLE(1,0,3,2)));
-        // holds result in all 4 indices
+     
+        // holds a fourth in each index
         sum_numerator = _mm_add_ps(sum_numerator, sum);
 
         __m128 x_x   = _mm_mul_ps(x, x);
         __m128 x_x_1 = _mm_add_ps(x_x, _1);
         __m128 mult = x_x_1;
 
-        mult = _mm_mul_ps(mult, _mm_shuffle_ps(mult, mult, _MM_SHUFFLE(3,2,1,0)));
-        mult = _mm_mul_ps(mult, _mm_shuffle_ps(mult, mult, _MM_SHUFFLE(1,0,3,2)));
-        // holds result in all 4 indices
+        // holds a fourth in each index
         mult_denumerator = _mm_mul_ps(mult_denumerator, mult);
 
         p += 4;
     }
+
+    // creates mask for the shuffle, values are from 0 to 3
+    // #define _MM_SHUFFLE(z, y, x, w) (((z) << 6) | ((y) << 4) | ((x) << 2) | (w))
+    // holds result in all 4 indices
+    sum_numerator = _mm_add_ps(sum_numerator, _mm_shuffle_ps(sum_numerator, sum_numerator, _MM_SHUFFLE(2,3,1,0)));
+    sum_numerator = _mm_add_ps(sum_numerator, _mm_shuffle_ps(sum_numerator, sum_numerator, _MM_SHUFFLE(1,0,3,2)));
+
+    mult_denumerator = _mm_mul_ps(mult_denumerator, _mm_shuffle_ps(mult_denumerator, mult_denumerator, _MM_SHUFFLE(2,3,1,0)));
+    mult_denumerator = _mm_mul_ps(mult_denumerator, _mm_shuffle_ps(mult_denumerator, mult_denumerator, _MM_SHUFFLE(1,0,3,2)));
 
     // convert scalar single-precision to float 32 - get first 32 bit float out of vector
     float sum_numerator_f32 = _mm_cvtss_f32(sum_numerator);

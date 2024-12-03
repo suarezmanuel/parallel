@@ -1,7 +1,7 @@
 .section .data
 
 EOS_mask:
-
+3
 .byte 0x1,0xFF
 .byte 0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
@@ -51,13 +51,13 @@ movq 16(%rsi), %r13     # str2
 pushq $0                # diff
                        
 movq %r12, %rdi         # len1
-call strlens
-movq %rax, %rcx         
+call strlens            # result is in rcx
+pushq %rcx
                         
 movq %r13, %rdi         # len2
 call strlens
-movq %rax, %rdx
-
+movq %rcx, %rdx         # result is in rcx
+popq %rcx
 # push len1, len2
 pushq %rcx
 pushq %rdx
@@ -74,11 +74,12 @@ subq %rcx, %rdx
 movq %rdx, %rax
 
 .DONE2:
-pushq %rax # push abs(len1-len2) into stack
 
 # restore len1, len2
 popq %rdx  # len2
 popq %rcx  # len1
+
+pushq %rax # push abs(len1-len2) into stack
 
 cmpq %rdx, %rcx         #  min(len1, len2)/4
 cmovg %rdx, %rcx
@@ -93,17 +94,17 @@ movq %rcx, %r9
 .START:
                     
 cmpq %r11, %r9          # min(len1, len2)/4 - counter
-jl .DONE
+jle .DONE
                         # SIMD operatiodns
-movd (%r12), %xmm0    # MOVe unaligneD Doubleword - loads 16 bytes from str1
-movd (%r13), %xmm1    # MOVe unaligneD Doubleword - loads 16 bytes from str2
+movd (%r12), %xmm0      # MOVe unaligneD Doubleword - loads 16 bytes from str1
+movd (%r13), %xmm1      # MOVe unaligneD Doubleword - loads 16 bytes from str2
 
 pcmpeqb %xmm1, %xmm0    # Packed CoMPare for EQual Bytes - compares each byte in xmm0, xmm1
 pmovmskb %xmm0, %r10d   # Packed MOVe MaSK Byte          - bitmask from each byte in result into r10d (lower 32 bits of r10)
 not %r10d               # flip the bitmask
 and $0xF, %r10d         # only get the first 4 bits
 popcnt %r10d, %r10d     # get the number of turned on bits
-addq %r10, 8(%rsp)    # diff += differences
+addq %r10, 8(%rsp)      # diff += differences
 
 addq $4, %r12           # str1 += 4
 addq $4, %r13           # str2 += 4
