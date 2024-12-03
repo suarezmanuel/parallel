@@ -2,6 +2,18 @@
 #include <emmintrin.h>
 #include <string.h>
 
+/*
+
+asdf
+asbb
+
+xff xff x00 x00
+
+00000001 00000001 00000000 00000000
+
+1 1 0 0
+
+*/
 int main (int argc, char** argv) {
 
     // because we are already going through the hassle of getting the length
@@ -21,7 +33,7 @@ int main (int argc, char** argv) {
         __m128i a = _mm_setr_epi8(str1[0],str1[1],str1[2],str1[3],0,0,0,0, 0,0,0,0, 0,0,0,0); 
         __m128i b = _mm_setr_epi8(str2[0],str2[1],str2[2],str2[3],0,0,0,0, 0,0,0,0, 0,0,0,0); 
 
-        // get byte-byte comparison of str1, str2
+        // get byte2byte comparison of str1, str2
         // result is a mask, each 0xFF byte means theres a difference
         __m128i result = _mm_cmpeq_epi8(a, b);
 
