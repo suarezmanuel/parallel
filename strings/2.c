@@ -1,9 +1,6 @@
-// This file ought to be compiled with the flags: -msse4.2 -mavx512f -mavx512vl
-
 #include<stdio.h>
 #include<string.h>
 #include<immintrin.h>
-#include<tmmintrin.h>
 #include<stdlib.h>
 #define MAX_STR 255
 
@@ -91,17 +88,6 @@ int sse_b64_to_decimal(char *str){
         __m128i cmp = _mm_or_si128(_mm_or_si128(_mm_or_si128(cmp_A2Z, cmp_a2z), _mm_or_si128(cmp_029, cmp_plus)), cmp_slash); // Combine all the comparisons
 
         int mask = _mm_movemask_epi8(cmp); // Convert the comparison to a mask
-
-        // Apply the mask to keep or remove values
-        __m128i masked_chunk = _mm_and_si128(chunk, cmp);
-        __m128i zero = _mm_setzero_si128();
-        __mmask8 mask2 = _mm_cmpneq_epi32_mask(masked_chunk, zero); // Mask of non-zero elements
-        // Shuffle the masked chunk to compress the valid bytes
-        __m128i compressed_chunk = _mm_maskz_compress_epi32(mask2, masked_chunk);
-        char val[16];
-	    _mm_storeu_si128((__m128i*)val, compressed_chunk);
-        printf("%x %x %x %x %x %x %x %x %x\n\n",val[0],val[1], val[2], val[3], val[4], val[5], val[6], val[7], val[8]);
-        
         for(int j = 0; j < 16; j++){ // Loop through the mask
             if(mask & (1 << j)){ // If the character is valid
                 char c = ((char*)&chunk)[j];
@@ -120,13 +106,12 @@ int b64_distance(char str1[MAX_STR], char str2[MAX_STR]){
 }
 
 
-int main() {
-    // Example strings with smaller values
-    char str1[MAX_STR] = "1223^@%@H";
-    char str2[MAX_STR] = "1123^@%@i";
+// int main() {
+//     // Example strings with smaller values
+//     char str1[MAX_STR] = "123123*$#^@%@H";
+//     char str2[MAX_STR] = "123123*$#^@%@i";
+//     int distance = b64_distance(str1, str2);
+//     printf("Base64 Distance: %d\n", distance);  // Expected output should be within int range
 
-    int distance = b64_distance(str1, str2);
-    printf("Base64 Distance: %d\n", distance);  // Expected output should be within int range
-
-    return 0;
-}
+//     return 0;
+// }
